@@ -80,28 +80,29 @@ st.markdown("""
         width: 100% !important;
     }
 
-    /* AJUSTE ESTRICTO PARA BÚSQUEDA PERFECTA EN MÓVIL (LUPA Y X SIEMPRE VISIBLES) */
+    /* AJUSTE ESTRICTO PARA BÚSQUEDA PERFECTA EN MÓVIL Y PC */
     div[data-testid="stHorizontalBlock"] {
         display: flex !important;
-        flex-direction: row !important; /* Fuerza a que sea una fila horizontal */
-        flex-wrap: nowrap !important; /* Prohíbe que los elementos salten de línea */
+        flex-direction: row !important; /* Fuerza una sola línea siempre */
+        flex-wrap: nowrap !important; /* Prohíbe que salten de línea */
         align-items: center !important;
+        justify-content: flex-start !important;
         width: 100% !important;
-        gap: 5px !important; 
+        gap: 5px !important; /* Espacio fijo y pequeño entre la barra y los botones */
     }
     div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {
         min-width: 0 !important;
-        padding: 0 !important; 
+        padding: 0 !important; /* Elimina el margen invisible gigante de Streamlit */
     }
     div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(1) {
-        flex: 1 1 auto !important; /* El input toma el espacio sobrante */
+        flex: 1 1 auto !important; /* La caja de texto toma todo el espacio disponible */
         width: 100% !important;
     }
     div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(2),
     div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(3) {
-        flex: 0 0 40px !important; /* Asigna exactamente 40px de ancho a cada botón para que no desaparezcan */
-        width: 40px !important;
-        min-width: 40px !important;
+        flex: 0 0 45px !important; /* Tamaño fijo e inamovible para los iconos */
+        width: 45px !important;
+        min-width: 45px !important;
     }
 
     /* ESTILO PARA LOS BOTONES DE LA BARRA DE BÚSQUEDA */
@@ -154,8 +155,8 @@ if not df.empty:
         # Título principal
         st.markdown('<h2 style="color: #1a73e8; text-align: center; margin-bottom: 20px;">Repuestos Área eléctrica SECA</h2>', unsafe_allow_html=True)
         
-        # Estructura de 3 columnas para la barra de búsqueda adaptada
-        col1, col2, col3 = st.columns([10, 1.5, 1.5])
+        # Estructura de 3 columnas para la barra de búsqueda
+        col1, col2, col3 = st.columns([10, 1, 1])
         
         with col1:
             busqueda = st.text_input("Buscar", value=st.session_state.busqueda_guardada, placeholder="Ingresar palabra clave o numero de material", label_visibility="collapsed")
