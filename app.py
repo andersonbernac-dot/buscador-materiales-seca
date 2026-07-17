@@ -26,12 +26,16 @@ if 'busqueda_guardada' not in st.session_state:
 # ==========================================
 st.markdown("""
     <style>
+    /* Ocultar elementos por defecto de Streamlit */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     [data-testid="stHeader"] {display: none;}
-    .block-container {padding-top: 1rem; padding-bottom: 5rem;}
+    
+    /* Ajustar el espaciado general de la app */
+    .block-container {padding-top: 1rem; padding-bottom: 2rem;}
     * { font-family: 'Roboto', sans-serif; }
 
+    /* Estilo de la caja de texto */
     div[data-baseweb="input"] {
         border-radius: 8px !important;
         border: 1px solid #e0e0e0 !important;
@@ -71,30 +75,30 @@ st.markdown("""
         width: 100% !important;
     }
 
-    /* ESTILO PARA EL BOTÓN DE LIMPIAR (X) */
-    button[title="Limpiar búsqueda"] {
+    /* ESTILO PARA MANTENER LA BARRA DE BÚSQUEDA EN UNA SOLA LÍNEA EN MÓVILES */
+    @media (max-width: 768px) {
+        div[data-testid="stHorizontalBlock"] {
+            flex-wrap: nowrap !important;
+            align-items: center !important;
+        }
+        div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {
+            min-width: auto !important;
+            padding: 0 3px !important;
+        }
+    }
+
+    /* ESTILO PARA LOS BOTONES DE LA BARRA DE BÚSQUEDA */
+    button[title="Buscar"], button[title="Limpiar búsqueda"] {
         background-color: transparent !important;
         border: none !important;
         box-shadow: none !important;
-        color: #5f6368 !important;
         font-size: 20px !important;
         padding: 4px !important;
         margin-top: -2px !important;
     }
-    button[title="Limpiar búsqueda"]:hover {
-        color: #d93025 !important;
-        background-color: transparent !important;
-    }
-
-    /* UI Fija */
-    .bottom-nav {
-        position: fixed; bottom: 0; left: 0; width: 100%; background-color: white;
-        display: flex; justify-content: space-around; padding: 10px 0;
-        border-top: 1px solid #e0e0e0; z-index: 1000;
-    }
-    .nav-item { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: #5f6368; font-size: 12px; }
-    .nav-item.active { color: #1a73e8; font-weight: bold; }
-    .nav-icon { font-size: 24px; margin-bottom: 4px; }
+    button[title="Buscar"] { color: #1a73e8 !important; }
+    button[title="Limpiar búsqueda"] { color: #5f6368 !important; }
+    button[title="Limpiar búsqueda"]:hover { color: #d93025 !important; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -125,16 +129,22 @@ if not df.empty:
         
         st.write("") 
         
-        # Título principal agregado
+        # Título principal
         st.markdown('<h2 style="color: #1a73e8; text-align: center; margin-bottom: 20px;">Repuestos Área eléctrica SECA</h2>', unsafe_allow_html=True)
         
-        # Nueva estructura de columnas sin el ícono de menú
-        col1, col2 = st.columns([8, 1])
+        # Estructura de 3 columnas para la barra de búsqueda
+        col1, col2, col3 = st.columns([7, 1.5, 1.5])
+        
         with col1:
-            # Placeholder actualizado
             busqueda = st.text_input("Buscar", value=st.session_state.busqueda_guardada, placeholder="Ingresar palabra clave o numero de material", label_visibility="collapsed")
             st.session_state.busqueda_guardada = busqueda
+            
         with col2:
+            # Botón Lupa (Forzará un rerun al igual que presionar Enter)
+            st.button("🔍", help="Buscar")
+            
+        with col3:
+            # Botón X para limpiar
             if st.button("✕", help="Limpiar búsqueda"):
                 st.session_state.busqueda_guardada = ""
                 st.rerun()
@@ -145,16 +155,10 @@ if not df.empty:
             busqueda_lower = st.session_state.busqueda_guardada.lower()
             
             # --- LÓGICA DE BÚSQUEDA MULTI-PALABRA (AND) ---
-            # 1. Separar lo que el usuario escribió por espacios
             palabras = busqueda_lower.split()
-            
-            # 2. Unimos todos los datos de cada fila en un solo bloque de texto en minúsculas
             texto_filas = df.astype(str).apply(lambda x: ' '.join(x).lower(), axis=1)
-            
-            # 3. Empezamos asumiendo que todas las filas son válidas
             mascara = pd.Series([True] * len(df), index=df.index)
             
-            # 4. Filtramos: la fila sobrevive SOLO si contiene TODAS las palabras clave
             for palabra in palabras:
                 mascara = mascara & texto_filas.str.contains(palabra)
             
@@ -164,15 +168,15 @@ if not df.empty:
             if not resultados.empty:
                 for idx, row in resultados.iterrows():
                     
-                    # Búsqueda estrictamente por el nombre de la columna en Data_Limpia
+                    # Extracción estricta
                     col_a = str(row.get("Nombre del archivo", "Sin Archivo")).strip()
                     col_b = str(row.get("Número de material", "Sin Material")).strip()
-                    
                     col_d = str(row.get("Nombre técnico (Denominación)", "")).strip()
+                    
                     if col_d == "" or col_d.lower() in ["nan", "none", "<na>"]:
                         col_d = " "
 
-                    # Etiqueta de la tarjeta con la estructura solicitada para el Buscador
+                    # Diseño de la tarjeta
                     label_tarjeta = f"**⚡ {col_a}**  \n**🔢 {col_b}**  \n🛠️ {col_d}"
                     
                     if st.button(label_tarjeta, key=f"btn_{idx}", help="tarjeta", type="secondary", use_container_width=True):
@@ -211,23 +215,18 @@ if not df.empty:
             "Descripción textual"
         ]
 
-        # Iteramos y extraemos usando un buscador flexible para evitar problemas de tildes o espacios ocultos
+        # Extracción flexible
         for titulo in columnas_ordenadas:
             val = ""
-            
-            # Normalizamos el título que estamos buscando
             titulo_norm = titulo.lower().replace('á','a').replace('é','e').replace('í','i').replace('ó','o').replace('ú','u').strip()
             
             for col in item.index:
-                # Normalizamos el nombre de la columna que viene del Excel
                 col_norm = str(col).lower().replace('á','a').replace('é','e').replace('í','i').replace('ó','o').replace('ú','u').strip()
                 
-                # Si los nombres son idénticos o si ambos contienen la palabra clave "planificaci"
                 if titulo_norm == col_norm or ("planificaci" in titulo_norm and "planificaci" in col_norm):
                     val = str(item[col]).strip()
                     break
             
-            # Limpiar nulos residuales
             if val.lower() in ["nan", "none", "<na>"]:
                 val = ""
                 
@@ -238,19 +237,3 @@ if not df.empty:
         html_detalles += '</div>'
         
         st.markdown(html_detalles, unsafe_allow_html=True)
-
-    # ==========================================
-    # ELEMENTOS DE UI FIJOS (NavBar)
-    # ==========================================
-    st.markdown("""
-        <div class="bottom-nav">
-            <a href="#" class="nav-item active">
-                <span class="nav-icon">📋</span>
-                Datos
-            </a>
-            <a href="#" class="nav-item">
-                <span class="nav-icon">📊</span>
-                Statistics
-            </a>
-        </div>
-    """, unsafe_allow_html=True)
