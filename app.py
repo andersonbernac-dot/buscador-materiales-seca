@@ -32,7 +32,7 @@ st.markdown("""
     [data-testid="stHeader"] {display: none;}
     
     /* Ajustar el espaciado general de la app */
-    .block-container {padding-top: 1rem; padding-bottom: 2rem;}
+    .block-container {padding-top: 1rem; padding-bottom: 2rem; max-width: 100vw !important; overflow-x: hidden !important;}
     * { font-family: 'Roboto', sans-serif; }
 
     /* Estilo de la caja de texto */
@@ -75,25 +75,25 @@ st.markdown("""
         width: 100% !important;
     }
 
-    /* AJUSTE PARA BÚSQUEDA PERFECTA EN MÓVIL Y PC (SIN DESBORDAMIENTO) */
+    /* AJUSTE ESTRICTO PARA BÚSQUEDA PERFECTA EN MÓVIL (EVITAR DESBORDAMIENTO) */
     div[data-testid="stHorizontalBlock"] {
-        flex-wrap: nowrap !important; /* Mantiene todo en una sola línea */
+        display: flex !important;
+        flex-wrap: nowrap !important; 
         align-items: center !important;
         width: 100% !important;
-        gap: 5px !important; /* Espacio mínimo entre buscador y botones */
+        gap: 0px !important; /* Eliminamos el gap para controlar los márgenes manualmente */
     }
     div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {
-        min-width: 0 !important; /* Clave de oro para evitar el scroll horizontal */
-        padding: 0 !important;
+        min-width: 0 !important;
+        padding: 0 2px !important; /* Espacio mínimo entre elementos */
     }
     div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(1) {
-        flex: 1 1 auto !important; /* La caja de texto toma todo el espacio sobrante */
-        width: 100% !important;
+        flex: 1 1 100% !important; /* El input toma todo el espacio sobrante disponible */
     }
     div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(2),
     div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(3) {
-        flex: 0 0 auto !important; /* Los botones toman solo el espacio estricto que necesitan */
-        width: auto !important;
+        flex: 0 0 auto !important; /* Los botones no se estiran */
+        width: 40px !important; /* Ancho fijo para garantizar que siempre entren en pantalla */
     }
 
     /* ESTILO PARA LOS BOTONES DE LA BARRA DE BÚSQUEDA */
@@ -101,9 +101,14 @@ st.markdown("""
         background-color: transparent !important;
         border: none !important;
         box-shadow: none !important;
-        font-size: 20px !important;
-        padding: 4px !important;
-        margin-top: -2px !important;
+        font-size: 18px !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        width: 100% !important;
+        height: 40px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
     }
     button[title="Buscar"] { color: #1a73e8 !important; }
     button[title="Limpiar búsqueda"] { color: #5f6368 !important; }
@@ -142,7 +147,7 @@ if not df.empty:
         st.markdown('<h2 style="color: #1a73e8; text-align: center; margin-bottom: 20px;">Repuestos Área eléctrica SECA</h2>', unsafe_allow_html=True)
         
         # Estructura de 3 columnas para la barra de búsqueda adaptada
-        col1, col2, col3 = st.columns([10, 1, 1])
+        col1, col2, col3 = st.columns([8, 1, 1])
         
         with col1:
             busqueda = st.text_input("Buscar", value=st.session_state.busqueda_guardada, placeholder="Ingresar palabra clave o numero de material", label_visibility="collapsed")
