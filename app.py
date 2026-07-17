@@ -75,16 +75,25 @@ st.markdown("""
         width: 100% !important;
     }
 
-    /* ESTILO PARA MANTENER LA BARRA DE BÚSQUEDA EN UNA SOLA LÍNEA EN MÓVILES */
-    @media (max-width: 768px) {
-        div[data-testid="stHorizontalBlock"] {
-            flex-wrap: nowrap !important;
-            align-items: center !important;
-        }
-        div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {
-            min-width: auto !important;
-            padding: 0 3px !important;
-        }
+    /* AJUSTE PARA BÚSQUEDA PERFECTA EN MÓVIL Y PC (SIN DESBORDAMIENTO) */
+    div[data-testid="stHorizontalBlock"] {
+        flex-wrap: nowrap !important; /* Mantiene todo en una sola línea */
+        align-items: center !important;
+        width: 100% !important;
+        gap: 5px !important; /* Espacio mínimo entre buscador y botones */
+    }
+    div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {
+        min-width: 0 !important; /* Clave de oro para evitar el scroll horizontal */
+        padding: 0 !important;
+    }
+    div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(1) {
+        flex: 1 1 auto !important; /* La caja de texto toma todo el espacio sobrante */
+        width: 100% !important;
+    }
+    div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(2),
+    div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(3) {
+        flex: 0 0 auto !important; /* Los botones toman solo el espacio estricto que necesitan */
+        width: auto !important;
     }
 
     /* ESTILO PARA LOS BOTONES DE LA BARRA DE BÚSQUEDA */
@@ -132,15 +141,15 @@ if not df.empty:
         # Título principal
         st.markdown('<h2 style="color: #1a73e8; text-align: center; margin-bottom: 20px;">Repuestos Área eléctrica SECA</h2>', unsafe_allow_html=True)
         
-        # Estructura de 3 columnas para la barra de búsqueda
-        col1, col2, col3 = st.columns([7, 1.5, 1.5])
+        # Estructura de 3 columnas para la barra de búsqueda adaptada
+        col1, col2, col3 = st.columns([10, 1, 1])
         
         with col1:
             busqueda = st.text_input("Buscar", value=st.session_state.busqueda_guardada, placeholder="Ingresar palabra clave o numero de material", label_visibility="collapsed")
             st.session_state.busqueda_guardada = busqueda
             
         with col2:
-            # Botón Lupa (Forzará un rerun al igual que presionar Enter)
+            # Botón Lupa
             st.button("🔍", help="Buscar")
             
         with col3:
