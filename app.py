@@ -31,6 +31,11 @@ st.markdown("""
     footer {visibility: hidden;}
     [data-testid="stHeader"] {display: none;}
     
+    /* Ocultar el texto "Press Enter to apply" */
+    [data-testid="InputInstructions"] {
+        display: none !important;
+    }
+    
     /* Ajustar el espaciado general de la app */
     .block-container {padding-top: 1rem; padding-bottom: 2rem; max-width: 100vw !important; overflow-x: hidden !important;}
     * { font-family: 'Roboto', sans-serif; }
@@ -78,14 +83,15 @@ st.markdown("""
     /* AJUSTE ESTRICTO PARA BÚSQUEDA PERFECTA EN MÓVIL (LUPA Y X SIEMPRE VISIBLES) */
     div[data-testid="stHorizontalBlock"] {
         display: flex !important;
-        flex-wrap: nowrap !important; 
+        flex-direction: row !important; /* Fuerza a que sea una fila horizontal */
+        flex-wrap: nowrap !important; /* Prohíbe que los elementos salten de línea */
         align-items: center !important;
         width: 100% !important;
-        gap: 2px !important; 
+        gap: 5px !important; 
     }
     div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {
         min-width: 0 !important;
-        padding: 0 2px !important; 
+        padding: 0 !important; 
     }
     div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(1) {
         flex: 1 1 auto !important; /* El input toma el espacio sobrante */
@@ -93,9 +99,9 @@ st.markdown("""
     }
     div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(2),
     div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(3) {
-        flex: 0 0 45px !important; /* Asigna exactamente 45px de ancho a cada botón para que no desaparezcan */
-        width: 45px !important;
-        min-width: 45px !important;
+        flex: 0 0 40px !important; /* Asigna exactamente 40px de ancho a cada botón para que no desaparezcan */
+        width: 40px !important;
+        min-width: 40px !important;
     }
 
     /* ESTILO PARA LOS BOTONES DE LA BARRA DE BÚSQUEDA */
